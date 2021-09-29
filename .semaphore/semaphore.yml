@@ -27,6 +27,7 @@ blocks:
         - name: pip
           commands:
             - checkout
+            - echo $SEMAPHORE_GIT_DIR
             - cache restore
             - pip download --cache-dir .pip_cache -r requirements.txt
             - cache store
