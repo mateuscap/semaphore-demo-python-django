@@ -23,6 +23,7 @@ blocks:
             - checkout
             - cache restore
             - pip download --cache-dir .pip_cache -r requirements.txt
+            - pipenv install -d
             - cache store
   - name: Run Code Analysis
     task:
