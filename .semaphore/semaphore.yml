@@ -26,7 +26,7 @@ blocks:
             - pip download --cache-dir .pip_cache -r requirements.txt
             - cache store
     dependencies:
-      - testing 20.04
+      - testing 18.04
   - name: Run Code Analysis
     task:
       prologue:
@@ -89,13 +89,9 @@ blocks:
             - python manage.py check --deploy --fail-level ERROR
     dependencies:
       - Run Browser Tests
-  - name: testing 20.04
+  - name: testing 18.04
     dependencies: []
     task:
-      agent:
-        machine:
-          type: e1-standard-2
-          os_image: ubuntu2004
       jobs:
         - name: install python
           commands:
