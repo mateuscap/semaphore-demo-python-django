@@ -99,7 +99,7 @@ blocks:
       jobs:
         - name: install python
           commands:
-            - sem-version python2.7
+            - sem-version python 2.7
 after_pipeline:
   task:
     jobs:
