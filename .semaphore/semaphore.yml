@@ -4,12 +4,6 @@ agent:
   machine:
     type: e1-standard-2
     os_image: ubuntu1804
-after_pipeline:
-  task:
-    jobs:
-      - name: Reports
-        commands:
-          - test-results gen-pipeline-report -f
 fail_fast:
   stop:
     when: 'true'
@@ -31,6 +25,8 @@ blocks:
             - cache restore
             - pip download --cache-dir .pip_cache -r requirements.txt
             - cache store
+    dependencies:
+      - testing 20.04
   - name: Run Code Analysis
     task:
       prologue:
@@ -43,6 +39,8 @@ blocks:
           commands:
             - git ls-files | grep -v 'migrations' | grep -v 'settings.py' | grep -v 'manage.py' | grep -E '.py$' | xargs pylint -E --load-plugins=pylint_django
             - sleep 15
+    dependencies:
+      - Install Dependencies
   - name: Run Unit Tests
     task:
       prologue:
@@ -58,6 +56,8 @@ blocks:
         - name: View Test
           commands:
             - python manage.py test tasks.tests.test_views
+    dependencies:
+      - Run Code Analysis
   - name: Run Browser Tests
     task:
       env_vars:
@@ -76,6 +76,8 @@ blocks:
         - name: Browser Test
           commands:
             - python manage.py test tasks.tests.test_browser
+    dependencies:
+      - Run Unit Tests
   - name: Run Security Tests
     task:
       jobs:
@@ -85,3 +87,22 @@ blocks:
             - cache restore
             - pip install -r requirements.txt --cache-dir .pip_cache
             - python manage.py check --deploy --fail-level ERROR
+    dependencies:
+      - Run Browser Tests
+  - name: testing 20.04
+    dependencies: []
+    task:
+      agent:
+        machine:
+          type: e1-standard-2
+          os_image: ubuntu2004
+      jobs:
+        - name: install python
+          commands:
+            - sem-version python2.7
+after_pipeline:
+  task:
+    jobs:
+      - name: Reports
+        commands:
+          - test-results gen-pipeline-report -f
