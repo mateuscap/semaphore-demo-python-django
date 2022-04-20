@@ -95,6 +95,7 @@ blocks:
       jobs:
         - name: install python
           commands:
+            - checkout
             - sudo apt install pypy3-dev pypy-dev -y
             - sudo -H pip install -U pipenv
             - pipenv install -d
