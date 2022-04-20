@@ -26,7 +26,7 @@ blocks:
             - pip download --cache-dir .pip_cache -r requirements.txt
             - cache store
     dependencies:
-      - testing 18.04
+      - Pipenv Install
   - name: Run Code Analysis
     task:
       prologue:
@@ -89,13 +89,17 @@ blocks:
             - python manage.py check --deploy --fail-level ERROR
     dependencies:
       - Run Browser Tests
-  - name: testing 18.04
+  - name: Pipenv Install
     dependencies: []
     task:
       jobs:
         - name: install python
           commands:
-            - sem-version python 2.7
+            - pipenv install -d
+      agent:
+        machine:
+          type: e1-standard-2
+          os_image: ubuntu2004
 after_pipeline:
   task:
     jobs:
