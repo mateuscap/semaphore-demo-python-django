@@ -99,10 +99,6 @@ blocks:
             - sudo apt install pypy3-dev pypy-dev -y
             - sudo -H pip install -U pipenv
             - pipenv install -d
-      agent:
-        machine:
-          type: e1-standard-2
-          os_image: ubuntu2004
 after_pipeline:
   task:
     jobs:
