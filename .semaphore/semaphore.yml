@@ -2,7 +2,7 @@ version: v1.0
 name: Semaphore Python / Django Example Pipeline
 agent:
   machine:
-    type: e1-standard-8
+    type: e1-standard-2
     os_image: ubuntu1804
 fail_fast:
   stop:
@@ -25,6 +25,10 @@ blocks:
             - cache restore
             - pip download --cache-dir .pip_cache -r requirements.txt
             - cache store
+      agent:
+        machine:
+          type: e1-standard-8
+          os_image: ubuntu1804
     dependencies:
       - Pipenv Install
   - name: Run Code Analysis
@@ -99,6 +103,10 @@ blocks:
             - sudo apt install pypy3-dev pypy-dev -y
             - sudo -H pip install -U pipenv
             - pipenv install -d
+      agent:
+        machine:
+          type: e1-standard-4
+          os_image: ubuntu1804
 after_pipeline:
   task:
     jobs:
