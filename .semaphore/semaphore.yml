@@ -22,10 +22,15 @@ blocks:
           commands:
             - checkout
             - cache restore
+            - cache restore pip_env_cache
             - pip download --cache-dir .pip_cache -r requirements.txt
             - sudo -H pip install -U pipenv
             - pipenv install -d
-            - cache store
+            - cache store pip_env_cache $PIPENV_CACHE_DIR
+      env_vars:
+        - name: PIPENV_CACHE_DIR
+          value: .pip_cache
+    dependencies: []
   - name: Run Code Analysis
     task:
       prologue:
@@ -37,7 +42,8 @@ blocks:
         - name: Pylint
           commands:
             - git ls-files | grep -v 'migrations' | grep -v 'settings.py' | grep -v 'manage.py' | grep -E '.py$' | xargs pylint -E --load-plugins=pylint_django
-            - sleep 15
+    dependencies:
+      - Restoring cache
   - name: Run Unit Tests
     task:
       prologue:
@@ -53,6 +59,8 @@ blocks:
         - name: View Test
           commands:
             - python manage.py test tasks.tests.test_views
+    dependencies:
+      - Run Code Analysis
   - name: Run Browser Tests
     task:
       env_vars:
@@ -71,6 +79,8 @@ blocks:
         - name: Browser Test
           commands:
             - python manage.py test tasks.tests.test_browser
+    dependencies:
+      - Run Unit Tests
   - name: Run Security Tests
     task:
       jobs:
@@ -80,3 +90,18 @@ blocks:
             - cache restore
             - pip install -r requirements.txt --cache-dir .pip_cache
             - python manage.py check --deploy --fail-level ERROR
+    dependencies:
+      - Run Browser Tests
+  - name: Restoring cache
+    dependencies:
+      - Install Dependencies
+    task:
+      jobs:
+        - name: 'Job #1'
+          commands:
+            - cache restore
+            - cache restore pip_env_cache
+            - sem-version python 3.8
+            - checkout --use-cache
+            - sudo -H pip install -U pipenv
+            - pipenv install -d
