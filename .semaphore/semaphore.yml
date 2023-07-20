@@ -75,8 +75,8 @@ blocks:
             - '#pip install -r requirements.txt --cache-dir .pip_cache'
             - '#python manage.py check --deploy --fail-level ERROR'
 promotions:
-  - name: Promotion 1
+  - name: Auto_Promotion
     pipeline_file: pipeline_2.yml
     deployment_target: staging
     auto_promote:
-      when: branch = 'master' AND result = 'passed'
+      when: branch = 'fork-and-run'
